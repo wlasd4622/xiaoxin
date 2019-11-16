@@ -1,0 +1,57 @@
+{
+  "pages": [
+    "pages/index/main",
+    "pages/logs/main",
+    "pages/dubbing/main",
+    "pages/my/main",
+    "pages/peiyin/main",
+    "pages/audition/main"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "AI配音",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#4b4f57",
+    "backgroundColor": "#fafafa",
+    "selectedColor": "#3cb204",
+    "borderStyle": "white",
+
+    "list": [{
+      "text": "配音",
+      "pagePath": "pages/index/main",
+      "iconPath": "static/tabs/t1.png",
+      "selectedIconPath": "static/tabs/t1-active.png"
+    }, {
+      "text": "试听",
+      "pagePath": "pages/audition/main",
+      "iconPath": "static/tabs/t2.png",
+      "selectedIconPath": "static/tabs/t2-active.png"
+    }, {
+      "text": "我的",
+      "pagePath": "pages/my/main",
+      "iconPath": "static/tabs/t3.png",
+      "selectedIconPath": "static/tabs/t3-active.png"
+    }],
+
+    "items": [{
+      "name": "配音",
+      "pagePath": "pages/index/main",
+      "icon": "static/tabs/t1.png",
+      "activeIcon": "static/tabs/t1-active.png"
+    }, {
+      "name": "试听",
+      "pagePath": "pages/audition/main",
+      "icon": "static/tabs/t2.png",
+      "activeIcon": "static/tabs/t2-active.png"
+    }, {
+      "name": "我的",
+      "pagePath": "pages/my/main",
+      "icon": "static/tabs/t3.png",
+      "activeIcon": "static/tabs/t3-active.png"
+    }],
+    "position": "bottom"
+  }
+}
