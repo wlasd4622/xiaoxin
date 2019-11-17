@@ -4,17 +4,17 @@
       <div><i class="icon iconfont icon-luyin"></i></div>
     </div>
     <div class="menu-list">
-      <div class="item item0">
+      <div class="item item0" @click="to('password')">
         <div class="d1"><i class="icon iconfont icon-qiamizhifu"></i></div>
-        <div class="d2">添加卡密</div>
+        <div class="d2">卡密管理</div>
         <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
       </div>
-      <div class="item item1">
+      <div class="item item1" @click="to()">
         <div class="d1"><i class="icon iconfont icon-shiyongbangzhu"></i></div>
         <div class="d2">使用帮助</div>
         <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
       </div>
-      <div class="item item2">
+      <div class="item item2" @click="to()">
         <div class="d1"><i class="icon iconfont icon-lianxikefu"></i></div>
         <div class="d2">联系客服</div>
         <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
@@ -29,7 +29,23 @@ export default {
     return {};
   },
 
-  created() {}
+  created() {},
+  methods: {
+    Toast(msg) {
+      wx.showToast({
+        title: msg,
+        icon: "none",
+        duration: 2000
+      });
+    },
+    to(name) {
+      if (!name) {
+        this.Toast("开发中");
+        return false;
+      }
+      wx.navigateTo({ url: `../${name}/main` });
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -81,7 +97,7 @@ export default {
     .d3 {
       text-align: right;
       width: 20px;
-      ._i{
+      ._i {
         font-size: 14px;
       }
     }
@@ -93,7 +109,7 @@ export default {
     &.item1 {
     }
     &.item2 {
-       .d1 ._i {
+      .d1 ._i {
         font-size: 16px;
       }
     }
