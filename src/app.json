@@ -6,6 +6,7 @@
     "pages/my/main",
     "pages/peiyin/main",
     "pages/password/main",
+    "pages/setting/main",
     "pages/audition/main"
   ],
   "window": {

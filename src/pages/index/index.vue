@@ -1,6 +1,10 @@
 <template>
   <div class="container">
     <div>
+      <p>{{aa}}</p>
+      <p>
+        <input type="text" @input="fff" v-model.lazy="aa" placeholder="ddd" />
+      </p>
       <p>
         <i class="icon iconfont icon-luyin"></i>
       </p>
@@ -15,10 +19,11 @@
 
 <script>
 import card from "@/components/card";
-
+import api from "@/common/api";
 export default {
   data() {
     return {
+      aa: "",
       motto: "Hello miniprograme",
       userInfo: {
         nickName: "mpvue",
@@ -30,8 +35,13 @@ export default {
   components: {
     card
   },
-
+  fff(e){
+    console.log(e);
+  },
   methods: {
+    fff(e){
+      console.log(e);
+    },
     toDubbingPage() {
       wx.navigateTo({ url: "../dubbing/main" });
     },
@@ -51,10 +61,12 @@ export default {
       // throw {message: 'custom test'}
     }
   },
-
-  created() {
+  mounted() {
     // let app = getApp()
-  }
+    // let {data} = await api.peiYinShiList()
+    // console.log(data);
+  },
+  async created() {}
 };
 </script>
 

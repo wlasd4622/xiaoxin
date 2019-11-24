@@ -2,48 +2,57 @@
   <div class="container">
     <div class="header">
       <span class="left">输入配音词</span>
+      <span @click="snManage">卡密管理</span>
     </div>
-    <div class="input-content pr">
-      <textarea name="" id="" v-model.lazy="text" cols="30" rows="10"></textarea>
-      <div class="input-numer" :class="text.length>maxChars?'error':''">
-        {{text.length}}/{{maxChars}}
+    <form action>
+      <div class="input-content pr">
+        <textarea name="text" v-model.lazy="text" cols="30" rows="10"></textarea>
+        <div
+          class="input-numer"
+          :class="text.length>maxChars?'error':''"
+        >{{text.length}}/{{maxChars}}</div>
       </div>
-    </div>
+    </form>
     <div class="group">
       <p>选择配音师</p>
-      <div>
-        <picker :range="voiceList" mode="selector" range-key="value" @change="voicePickerChange">
-          <view class="picker">
-            {{voiceList[voiceIndex].value}}
-          </view>
-        </picker>
+      <div @click="settingHandle(0)">
+        <span class="_picker" v-if="setting.dubbing">{{setting.dubbing.name}}</span>
         <i class="icon iconfont icon-jiantou"></i>
       </div>
     </div>
     <div class="group">
       <p>选择语速</p>
-      <div>
-        <picker :range="doubleSpeedList" mode="selector" range-key="value" @change="doubleSpeedPickerChange">
-          <view class="picker">
-            {{doubleSpeedList[doubleSpeedIndex].value}}
-          </view>
-        </picker>
+      <div @click="settingHandle(2)">
+        <span class="_picker" v-if="setting.speed">{{setting.speed.value}}</span>
         <i class="icon iconfont icon-jiantou"></i>
       </div>
     </div>
     <div class="group">
       <p>选择背景音乐</p>
-      <div>
-        <input type="text" v-model.lazy="sn">
+      <div @click="settingHandle(1)">
+        <span v-if="!setting.bg">选择背景音乐</span>
+        <span v-else class="_picker">{{setting.bg.name}}</span>
+        <i class="icon iconfont icon-jiantou"></i>
       </div>
     </div>
     <div class="btns">
-      <input type="text" style="position: fixed;bottom: -999px;left: -999px;" id="audioSrcInput" v-model.lazy="audioSrc">
-      <button @click="downLoadAudio" v-if="taskId&&audioSrc" class="icon-btn download audio-exist" data-clipboard-target="#audioSrcInput">
+      <input
+        type="text"
+        style="position: fixed;bottom: -999px;left: -999px;"
+        id="audioSrcInput"
+        v-model.lazy="audioSrc"
+      />
+      <button
+        @click="downLoadAudio"
+        v-if="taskId&&audioSrc"
+        class="icon-btn download audio-exist"
+        data-clipboard-target="#audioSrcInput"
+      >
         <i class="icon iconfont icon-xiazai"></i>
         <p>下载</p>
       </button>
-      <button @click="downLoadAudio" v-if="!(taskId&&audioSrc)" class="icon-btn download"><i class="icon iconfont icon-xiazai"></i>
+      <button @click="downLoadAudio" v-if="!(taskId&&audioSrc)" class="icon-btn download">
+        <i class="icon iconfont icon-xiazai"></i>
         <p>下载</p>
       </button>
       <button @click="audioPlay" class="audition icon-btn">
@@ -57,8 +66,14 @@
         <div class="c">生成配音</div>
       </button>
     </div>
-    <awesome-picker v-if="pickerData&&pickerData.length" :anchor="pickerAnchor" ref="picker" :data="pickerData" @cancel="handlePickerCancel" @confirm="handlePickerConfirm">
-    </awesome-picker>
+    <awesome-picker
+      v-if="pickerData&&pickerData.length"
+      :anchor="pickerAnchor"
+      ref="picker"
+      :data="pickerData"
+      @cancel="handlePickerCancel"
+      @confirm="handlePickerConfirm"
+    ></awesome-picker>
     <div class="loader-content" v-if="audioStatus">
       <div class="loader">
         <i @click="audioAuspend" class="icon iconfont icon-2guanbi"></i>
@@ -71,6 +86,7 @@
 </template>
 
 <script>
+import api from "@/common/api";
 // http://mint-ui.github.io/docs/#/zh-cn2/checklist
 import axios from "axios";
 import qs from "qs";
@@ -78,6 +94,9 @@ export default {
   name: "dubbing",
   data() {
     return {
+      sn: "",
+      bmList: [],
+      bmListStatus: -1,
       date: "", //不填写默认今天日期，填写后是默认日期
       host: "http://tts.api001.com",
       audio: null,
@@ -87,7 +106,6 @@ export default {
       maxChars: 300,
       text: "",
       taskAddObj: {},
-      sn: "",
       taskId: "",
       version: 200,
       loading: false,
@@ -96,99 +114,47 @@ export default {
       doubleSpeedIndex: 5,
       pickerData: [],
       pickerAnchor: [],
-      doubleSpeedList: [
-        {
-          index: 0,
-          value: "-500"
+      setting: {
+        dubbing: {
+          level: 5,
+          no: 0,
+          name: "小艾 - 女",
+          mp3:
+            "http://files101.oss-cn-beijing.aliyuncs.com/peiyin_demo/py01_bg.mp3",
+          selected: true
         },
-        {
-          index: 1,
-          value: "-400"
-        },
-        {
-          index: 2,
-          value: "-300"
-        },
-        {
-          index: 3,
-          value: "-200"
-        },
-        {
-          index: 4,
-          value: "-100"
-        },
-        {
-          index: 5,
-          value: "0"
-        },
-        {
-          index: 6,
-          value: "100"
-        },
-        {
-          index: 7,
-          value: "200"
-        },
-        {
-          index: 8,
-          value: "300"
-        },
-        {
-          index: 9,
-          value: "400"
-        },
-        {
-          index: 10,
-          value: "500"
-        }
-      ],
-      voiceList: [
-        {
-          index: 0,
-          value: "小艾 - 女 - 5星配音师"
-        },
-        {
-          index: 1,
-          value: "小娜 - 女 - 5星配音师"
-        },
-        {
-          index: 2,
-          value: "小雅 - 女 - 4星配音师"
-        },
-        {
-          index: 3,
-          value: "小芳 - 女 - 4星配音师"
-        },
-        {
-          index: 4,
-          value: "小美 - 女 - 5星配音师"
-        },
-        {
-          index: 5,
-          value: "小雪 - 女 - 5星配音师"
-        },
-        {
-          index: 6,
-          value: "大鹏 - 男 - 5星配音师"
-        },
-        {
-          index: 7,
-          value: "大明 - 男 - 4星配音师"
-        },
-        {
-          index: 8,
-          value: "大伟 - 男 - 5星配音师"
-        },
-        {
-          index: 9,
-          value: "小刚 - 男 - 3星配音师"
-        }
-      ]
+        speed: { index: 5, value: "0", selected: true }
+      }
     };
   },
   created() {},
   mounted() {},
+  onShow() {
+    this.getSetting();
+  },
+
   methods: {
+    snManage() {
+      wx.navigateTo({ url: "../password/main" });
+    },
+    getSetting() {
+      console.log(666);
+      let dubbing = wx.getStorageSync("dubbing") || "";
+      let speed = wx.getStorageSync("speed") || "";
+      let bg = wx.getStorageSync("bg") || "";
+      if (dubbing) {
+        this.setting.dubbing = JSON.parse(dubbing);
+      }
+      if (speed) {
+        this.setting.speed = JSON.parse(speed);
+      }
+      if (bg) {
+        this.setting.bg = JSON.parse(bg);
+      }
+    },
+    settingHandle(index) {
+      wx.navigateTo({ url: `../setting/main?index=${index}` });
+    },
     doubleSpeedPickerChange: function(e) {
       let index = parseInt(e.mp.detail.value);
       this.doubleSpeedIndex = index || 0;
@@ -208,34 +174,36 @@ export default {
         }, ms);
       });
     },
+    async bgMusicList() {
+      let { data, status } = await api.listBgMusic();
+      this.bmListStatus = status;
+      this.bmList = data;
+    },
     async getTask(id) {
       let audioSrc = "";
       do {
         try {
-          let result = await axios({
-            method: "get",
-            url: `${this.host}/tts/task/${id}`
-          });
-          if (result && result.data && result.data.status === 0) {
+          let { data } = await api.taskStatus(id);
+          console.log(data);
+          if (data && data.data.status == 0) {
             // 配音完成
-            audioSrc = result.data.data.download_url;
+            audioSrc = data.data.download_url;
             break;
           }
           await this.sleep(2000);
         } catch (err) {
+          this.Toast(err.message);
           break;
         }
       } while (!audioSrc);
       this.loading = false;
       this.audioSrc = audioSrc;
-      //   Toast("配音已生成，可以下载或试听");
-
-      MessageBox(
-        "配音成功",
-        `<p>本次配音消耗：${this.taskAddObj.point}</p><p>卡密剩余点数：${
+      wx.showModal({
+        title: "配音成功",
+        content: `本次配音消耗：${this.taskAddObj.point},卡密剩余点数：${
           this.taskAddObj.balance
-        }</p><p>卡密有效期：${this.taskAddObj.expire}</p>`
-      );
+        },卡密有效期：${this.taskAddObj.expire}`
+      });
     },
     downLoadAudio() {
       this.Toast("开发中...");
@@ -296,13 +264,12 @@ export default {
     },
     submit() {
       console.log(`>>>submit`);
-      this.Toast("开发中...");
-      return false;
       let that = this;
       if (this.loading) {
         return false;
       }
-
+      let sn = wx.getStorageSync("sn");
+      this.sn = sn;
       if (!this.text) {
         this.Toast("请输入配音内容");
         return false;
@@ -310,56 +277,56 @@ export default {
         this.Toast("请输入卡号");
         return false;
       }
-      MessageBox.confirm(
-        `<p>字符数:${that.text.length}</p>确认需要配音吗？`
-      ).then(action => {
-        console.log(action);
-        that.loading = true;
-        // 记录卡号
-        localStorage.setItem("sn", that.sn);
-        this.taskId = "";
-        this.audioSrc = "";
-        this.taskAddObj = {};
-        axios({
-          method: "post",
-          url: `${that.host}/tts/taskadd`,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8;"
-          },
-          data: qs.stringify({
-            version: that.version,
-            sn: that.sn,
-            voice: that.voiceIndex,
-            speech_rate: that.doubleSpeedList[that.doubleSpeedIndex].value,
-            text: that.text
-          })
-        })
-          .then(res => {
-            if (res.status === 200 && res.data.status === 0) {
-              let taskId = res.data.data.task_id;
-              that.taskId = taskId;
-              Toast("正在生成配音请稍后...");
-              that.getTask(taskId);
-              this.taskAddObj = res.data.data;
-            } else {
-              that.loading = false;
-              Toast(res.data.message || "配音失败");
-            }
-          })
-          .catch(err => {
-            Toast("配音失败");
-            that.loading = false;
-          });
+      wx.showModal({
+        content: `字符数:${that.text.length}，确认需要配音吗？`,
+        success(res) {
+          if (res.cancel) {
+            //点击取消,默认隐藏弹框
+          } else {
+            that.loading = true;
+            wx.showLoading({
+              title: "配音中..."
+            });
+            // 记录卡号
+            that.taskId = "";
+            that.audioSrc = "";
+            that.taskAddObj = {};
+            api
+              .taskAdd({
+                version: that.version,
+                sn: that.sn,
+                voice: that.setting.dubbing.no,
+                speech_rate: that.setting.speed.value,
+                text: that.text,
+                bg_music_no: that.setting.bg.no
+              })
+              .then(res => {
+                if (res.status === 0) {
+                  let taskId = res.data.task_id;
+                  that.taskId = taskId;
+                  that.getTask(that.taskId);
+                  that.taskAddObj = res.data;
+                } else {
+                  that.Toast(res);
+                  that.loading = false;
+                }
+              })
+              .catch(err => {
+                that.Toast("配音失败");
+                that.loading = false;
+              });
+          }
+        }
       });
+      return false;
     },
     show(type) {
-      console.log(6666);
       this.pickerType = type;
       if (this.pickerType === 0) {
-        this.pickerData = this.voiceList;
+        // this.pickerData = this.voiceList;
         this.pickerAnchor = [this.voiceIndex];
       } else {
-        this.pickerData = this.doubleSpeedList;
+        // this.pickerData = this.doubleSpeedList;
         this.pickerAnchor = [this.doubleSpeedIndex];
       }
       this.$nextTick(() => {
