@@ -310,7 +310,7 @@ export default {
       let sn = wx.getStorageSync("sn");
       this.sn = sn;
       // TODO
-      this.text = "66666666";
+      // this.text = "66666666";
       if (!this.text) {
         this.Toast("请输入配音内容");
         return false;
