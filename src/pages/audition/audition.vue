@@ -27,7 +27,7 @@
       </div>
       <!-- <span class="s5">{{item.createData}}</span> -->
     </div>
-    <div class="text-center" v-if="historyList&&historyList.length===0">暂未记录</div>
+    <div class="text-center empty" v-if="historyList&&historyList.length===0">暂未记录</div>
   </div>
 </template>
 
@@ -324,6 +324,10 @@ export default {
 }
 .text-center {
   text-align: center;
+}
+.empty{
+  color: gray;
+  padding: 30px 0;
 }
 </style>
 

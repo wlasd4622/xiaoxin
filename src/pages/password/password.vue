@@ -118,7 +118,7 @@ export default {
   align-items: center; /* 垂直居中 */
   .wrap {
     background: #fff;
-    padding: 20px;
+    padding: 10px;
     border-radius: 20px;
     min-width: 80%;
     & > div {

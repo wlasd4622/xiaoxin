@@ -8,14 +8,14 @@
     <div class="menu-list">
       <div class="item item0" @click="to('password')">
         <div class="d1">
-          <i class="icon iconfont icon-qiamizhifu"></i>
+          <i class="icon iconfont icon-user-folder"></i>
         </div>
         <div class="d2">卡密管理</div>
         <div class="d3">
           <i class="icon iconfont icon-jiantou"></i>
         </div>
       </div>
-      <div class="item item1" @click="to()">
+      <!-- <div class="item item1" @click="to()">
         <div class="d1">
           <i class="icon iconfont icon-shiyongbangzhu"></i>
         </div>
@@ -23,10 +23,10 @@
         <div class="d3">
           <i class="icon iconfont icon-jiantou"></i>
         </div>
-      </div>
-      <div class="item item2" @click="to('customer')">
+      </div> -->
+      <div class="item item2" @click="to('customer')" v-if="kefuStatus==0 && wechart">
         <div class="d1">
-          <i class="icon iconfont icon-lianxikefu"></i>
+          <i class="icon iconfont icon-kefu1"></i>
         </div>
         <div class="d2">联系客服</div>
         <div class="d3">
@@ -38,15 +38,26 @@
 </template>
 
 <script>
+import api from "@/common/api";
 export default {
   data() {
     return {
-      wechart: "gougouccnu"
+      wechart: "",
+      kefuStatus: -1
     };
   },
-
-  created() {},
+  onShow() {
+    this.getKeFu();
+  },
   methods: {
+    async getKeFu() {
+      let sn = wx.getStorageSync("sn") || 0;
+      let { data, status } = await api.getKeFu(sn);
+      this.kefuStatus = status;
+      if (this.kefuStatus === 0) {
+        this.wechart = data.split("：").pop();
+      }
+    },
     Toast(msg) {
       wx.showToast({
         title: msg,
@@ -79,7 +90,7 @@ export default {
         success(res) {
           wx.showModal({
             title: "提示",
-            showCancel:false,
+            showCancel: false,
             content: `开发者微信号${that.wechart}已复制，可以去微信中搜索添加`
           });
         },
@@ -132,8 +143,8 @@ export default {
       text-align: center;
       width: 30px;
       margin-right: 5px;
-      
-      ._i{
+
+      ._i {
         color: #555;
       }
     }
@@ -152,14 +163,14 @@ export default {
     }
     &.item0 {
       .d1 ._i {
-        font-size: 15px;
+        font-size: 20px;
       }
     }
     &.item1 {
     }
     &.item2 {
       .d1 ._i {
-        font-size: 16px;
+        font-size: 18px;
       }
     }
   }

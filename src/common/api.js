@@ -49,6 +49,13 @@ let taskAdd = params => {
         body: params
     })
 }
+
+let getKeFu = (snId = 0) => {
+    return fly.request({
+        method: 'get',
+        url: `/tts/kefu/${snId}`
+    })
+}
 /**
  * 查询配音是否成功接口
  * 入传和之前的相比，没变。
@@ -68,5 +75,6 @@ export default {
     listBgMusic,
     getSnInfo,
     taskAdd,
-    taskStatus
+    taskStatus,
+    getKeFu
 }
