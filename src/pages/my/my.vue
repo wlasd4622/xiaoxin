@@ -79,6 +79,7 @@ export default {
         success(res) {
           wx.showModal({
             title: "提示",
+            showCancel:false,
             content: `开发者微信号${that.wechart}已复制，可以去微信中搜索添加`
           });
         },
@@ -131,6 +132,9 @@ export default {
       text-align: center;
       width: 30px;
       margin-right: 5px;
+      ._i{
+        color: #555;
+      }
     }
     .d2 {
       flex: 1;

@@ -1,34 +1,32 @@
 <template>
   <div class="list">
-    <template>
-      <div
-        :class="['item','status-'+(item.status?'1':'0')]"
-        @click="play(index)"
-        v-for="(item,index) in historyList"
-        :key="item"
-      >
-        <div class="s1">{{index+1}}</div>
-        <div class="s2">
-          <i v-if="!item.status" class="iconfont icon icon-bofang"></i>
-          <i v-else class="iconfont icon icon-zanting"></i>
-        </div>
-        <div class="s3">
-          <span class="animate">{{item.text}}</span>
-        </div>
-
-        <div class="s4">
-          <div v-if="!item.status">{{item.duration}}</div>
-          <div v-else class="music">
-            <span class="line line1"></span>
-            <span class="line line2"></span>
-            <span class="line line3"></span>
-            <span class="line line4"></span>
-            <span class="line line5"></span>
-          </div>
-        </div>
-        <!-- <span class="s5">{{item.createData}}</span> -->
+    <div
+      :class="['item','status-'+(item.status?'1':'0')]"
+      @click="play(index)"
+      v-for="(item,index) in historyList"
+      :key="item"
+    >
+      <div class="s1">{{index+1}}</div>
+      <div class="s2">
+        <i v-if="!item.status" class="iconfont icon icon-bofang"></i>
+        <i v-else class="iconfont icon icon-zanting"></i>
       </div>
-    </template>
+      <div class="s3">
+        <span class="animate">{{item.text}}</span>
+      </div>
+
+      <div class="s4">
+        <div v-if="!item.status">{{item.duration}}</div>
+        <div v-else class="music">
+          <span class="line line1"></span>
+          <span class="line line2"></span>
+          <span class="line line3"></span>
+          <span class="line line4"></span>
+          <span class="line line5"></span>
+        </div>
+      </div>
+      <!-- <span class="s5">{{item.createData}}</span> -->
+    </div>
     <div class="text-center" v-if="historyList&&historyList.length===0">暂未记录</div>
   </div>
 </template>

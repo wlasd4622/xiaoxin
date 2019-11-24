@@ -17,15 +17,15 @@
           </div>
           <div>
             <span>剩余点数：</span>
-            <span>9999</span>
+            <span>{{data.balance}}</span>
           </div>
-          <div>
+          <!-- <div>
             <span>使用次数：</span>
             <span>99</span>
-          </div>
+          </div>-->
           <div>
             <span>到期时间：</span>
-            <span>2020-10-29</span>
+            <span>{{data.expire}}</span>
           </div>
         </div>
       </div>
@@ -34,17 +34,25 @@
 </template>
 
 <script>
+import api from "@/common/api";
 export default {
   data() {
     return {
       sn: "",
-      _sn: ""
+      _sn: "",
+      data: {}
     };
   },
   created() {
     this.sn = wx.getStorageSync("sn");
   },
-  mounted() {},
+  async mounted() {
+    this.sn = wx.getStorageSync("sn");
+    if (this.sn) {
+      let { data } = await api.getSnInfo(this.sn);
+      this.data = data;
+    }
+  },
   methods: {
     Toast(msg) {
       wx.showToast({
@@ -53,15 +61,21 @@ export default {
         duration: 2000
       });
     },
-    addSn() {
+    async addSn() {
       console.log(`>>>addSn`);
       if (!this._sn) {
         this.Toast("请填写卡密");
         return false;
       }
-      this.Toast("添加成功");
-      wx.setStorageSync("sn", this._sn);
-      this.sn = this._sn;
+      let { data, status, message } = await api.getSnInfo(this._sn);
+      if (status === 0) {
+        this.Toast("添加成功");
+        wx.setStorageSync("sn", this._sn);
+        this.sn = this._sn;
+        this.data=data;
+      } else {
+        this.Toast(message);
+      }
     }
   }
 };

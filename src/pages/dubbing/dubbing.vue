@@ -131,6 +131,9 @@ export default {
     // this.$player.src = `https://file1017.oss-cn-zhangjiakou.aliyuncs.com/tts/20191124/38205561a6d641f896ff57e69e78f8c6.mp3`;
     // this.$player.play();
   },
+  onLoad() {
+    this.loading = false;
+  },
   onShow() {
     this.getSetting();
   },
@@ -159,7 +162,12 @@ export default {
       }
     },
     settingHandle(index) {
-      wx.navigateTo({ url: `../setting/main?index=${index}` });
+      let dubbingNo = this.setting.dubbing.no;
+      let speedValue = this.setting.speed.value;
+      let bgNo = this.setting.bg ? this.setting.bg.no : "";
+      wx.navigateTo({
+        url: `../setting/main?index=${index}&dubbingNo=${dubbingNo}&speedValue=${speedValue}&bgNo=${bgNo}`
+      });
     },
     doubleSpeedPickerChange: function(e) {
       let index = parseInt(e.mp.detail.value);
@@ -219,6 +227,7 @@ export default {
         this.mp4Src = mp4Src;
         wx.showModal({
           title: "配音成功",
+          showCancel:false,
           content: `本次配音消耗：${this.taskAddObj.point},卡密剩余点数：${
             this.taskAddObj.balance
           },卡密有效期：${this.taskAddObj.expire}`
@@ -237,13 +246,27 @@ export default {
         }
         return false;
       }
-      wx.saveVideoToPhotosAlbum({
-        filePath: that.mp4Src,
+      wx.showLoading({
+        title: "下载中..."
+      });
+      wx.downloadFile({
+        url: that.mp4Src,
         success(res) {
-          that.Toast("保存成功");
+          wx.saveVideoToPhotosAlbum({
+            filePath: res.tempFilePath,
+            success(res) {
+              wx.hideLoading();
+              that.Toast("保存成功");
+            },
+            fail(err) {
+              // that.Toast(err.errMsg);
+              wx.hideLoading();
+            }
+          });
         },
         fail(err) {
-          that.Toast(err.errMsg);
+          // that.Toast(err.errMsg);
+          wx.hideLoading();
         }
       });
     },
@@ -287,12 +310,26 @@ export default {
       let sn = wx.getStorageSync("sn");
       this.sn = sn;
       // TODO
-      // this.text = "66666666";
+      this.text = "66666666";
       if (!this.text) {
         this.Toast("请输入配音内容");
         return false;
       } else if (!this.sn) {
-        this.Toast("请设置卡号");
+        // this.Toast("请设置卡号");
+        wx.showModal({
+          title: "提示",
+          content: `未设置卡号`,
+          confirmText: "去设置",
+          success(res) {
+            console.log(res);
+            if (res.confirm === true) {
+              wx.navigateTo({ url: "../password/main" });
+            }
+          },
+          fail(err) {
+            that.Toast(err.errMag);
+          }
+        });
         return false;
       }
       wx.showModal({
@@ -317,7 +354,11 @@ export default {
               text: that.text
             };
 
-            if (that.bmListStatus !== -1 && that.setting.bg.no) {
+            if (
+              that.bmListStatus !== -1 &&
+              that.setting.bg &&
+              that.setting.bg.no
+            ) {
               params.bg_music_no = that.setting.bg.no;
             }
 

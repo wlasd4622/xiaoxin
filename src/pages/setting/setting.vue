@@ -41,7 +41,7 @@
           </div>
         </div>
       </div>
-      
+
       <div v-if="tabIndex===1 && bmList.length" class="tab2">
         <div class="item" v-for="(item,index) in bmList" :key="index">
           <div class="left" @click="play(item)">{{item.name}}</div>
@@ -164,7 +164,11 @@ export default {
         2134
       ],
       bmList: [], // 背景音
-      audioStatus: false
+      audioStatus: false,
+      // 默认值
+      dubbingNo: "",
+      speedValue: "",
+      bgNo: ""
     };
   },
 
@@ -186,6 +190,17 @@ export default {
   },
   onLoad(options) {
     this.tabIndex = parseInt(options.index || 0);
+    this.dubbingNo = options.dubbingNo || 0;
+    this.speedValue = options.speedValue || 0;
+    this.bgNo = options.bgNo;
+    // 初始化默认值
+    let speedList = this.speedList;
+    speedList = speedList.map(item => {
+      if (item.value == this.speedValue) {
+        item.selected = true;
+      }
+    });
+    this.$set(this.speedList, speedList);
     // TODO
     // this.tabIndex = 1;
   },
@@ -220,7 +235,6 @@ export default {
       wx.setStorageSync("bg", JSON.stringify(item));
     },
     selectedSpeed(index) {
-      console.log(666);
       let item = this.speedList.find(item => item.selected === true);
       if (item) {
         item.selected = false;
@@ -241,6 +255,7 @@ export default {
       wx.setStorageSync("dubbing", JSON.stringify(item));
     },
     async peiYinShiList() {
+      let that = this;
       let { data } = await api.peiYinShiList();
       let pysList = [];
       data.map(item => {
@@ -249,17 +264,29 @@ export default {
         let [_level, _name] = name.split("：");
         level = parseInt(_level);
         name = _name.trim();
+        let selected = false;
+        if (no == that.dubbingNo) {
+          selected = true;
+        }
         pysList.push({
           level,
           no,
           name,
-          mp3
+          mp3,
+          selected
         });
       });
       this.pysList = pysList;
     },
     async bgMusicList() {
       let { data, status } = await api.listBgMusic();
+      let list = data.map(item => {
+        item.selected = false;
+        if (item.no == this.bgNo) {
+          item.selected = true;
+        }
+        return item;
+      });
       this.bmList = data;
       this.bmListStatus = status;
     }

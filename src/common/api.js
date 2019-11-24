@@ -27,7 +27,7 @@ let listBgMusic = params => {
  * 这个接口用于我的->卡密管理
  * @param {*} params 
  */
-let checkSn = id => {
+let getSnInfo = id => {
     return fly.request({
         method: 'get',
         url: `/tts/check_sn/${id}`
@@ -66,7 +66,7 @@ let taskStatus = taskId => {
 export default {
     peiYinShiList,
     listBgMusic,
-    checkSn,
+    getSnInfo,
     taskAdd,
     taskStatus
 }
