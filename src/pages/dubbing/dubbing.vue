@@ -61,14 +61,6 @@
         <div class="c">生成配音</div>
       </button>
     </div>
-    <!-- <awesome-picker
-      v-if="pickerData&&pickerData.length"
-      :anchor="pickerAnchor"
-      ref="picker"
-      :data="pickerData"
-      @cancel="handlePickerCancel"
-      @confirm="handlePickerConfirm"
-    ></awesome-picker>-->
     <div class="loader-content" v-if="audioStatus">
       <div class="loader">
         <i @click="audioAuspend" class="icon iconfont icon-2guanbi"></i>
@@ -94,11 +86,7 @@ export default {
       sn: "",
       bmList: [],
       bmListStatus: -1,
-      date: "", //不填写默认今天日期，填写后是默认日期
-      host: "http://tts.api001.com",
-      audio: null,
       audioSrc: "",
-      tiemr: null,
       audioStatus: false,
       maxChars: 300,
       text: "",
@@ -107,11 +95,6 @@ export default {
       mp4_url: "",
       version: 200,
       loading: false,
-      pickerType: 0,
-      voiceIndex: 0,
-      doubleSpeedIndex: 5,
-      pickerData: [],
-      pickerAnchor: [],
       setting: {
         dubbing: {
           level: 5,
@@ -126,6 +109,12 @@ export default {
     };
   },
   mounted() {
+    this.text = "";
+    this.taskId = "";
+    this.task_id = "";
+    this.mp4Src = "";
+    this.mp4_url = "";
+    this.bmListStatus = -1;
     this.bgMusicList();
     // this.audioStatus = true;
     // this.$player.src = `https://file1017.oss-cn-zhangjiakou.aliyuncs.com/tts/20191124/38205561a6d641f896ff57e69e78f8c6.mp3`;
@@ -168,14 +157,6 @@ export default {
       wx.navigateTo({
         url: `../setting/main?index=${index}&dubbingNo=${dubbingNo}&speedValue=${speedValue}&bgNo=${bgNo}`
       });
-    },
-    doubleSpeedPickerChange: function(e) {
-      let index = parseInt(e.mp.detail.value);
-      this.doubleSpeedIndex = index || 0;
-    },
-    voicePickerChange: function(e) {
-      let index = parseInt(e.mp.detail.value);
-      this.voiceIndex = index || 0;
     },
     audioAuspend() {
       this.audioStatus = false;
@@ -227,7 +208,7 @@ export default {
         this.mp4Src = mp4Src;
         wx.showModal({
           title: "配音成功",
-          showCancel:false,
+          showCancel: false,
           content: `本次配音消耗：${this.taskAddObj.point},卡密剩余点数：${
             this.taskAddObj.balance
           },卡密有效期：${this.taskAddObj.expire}`
@@ -383,30 +364,8 @@ export default {
         }
       });
       return false;
-    },
-    show(type) {
-      this.pickerType = type;
-      if (this.pickerType === 0) {
-        // this.pickerData = this.voiceList;
-        this.pickerAnchor = [this.voiceIndex];
-      } else {
-        // this.pickerData = this.doubleSpeedList;
-        this.pickerAnchor = [this.doubleSpeedIndex];
-      }
-      this.$nextTick(() => {
-        this.$refs.picker.show();
-      });
-    },
-    handlePickerCancel() {},
-    handlePickerConfirm(e) {
-      if (this.pickerType === 0) {
-        this.voiceIndex = e[0].index;
-      } else {
-        this.doubleSpeedIndex = e[0].index;
-      }
     }
-  },
-  computed: {}
+  }
 };
 </script>
 <style>
