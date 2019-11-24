@@ -3,7 +3,7 @@
     <template v-if="!sn">
       <div class="group group1">
         <div class="input">
-          <input type="text" v-model.lazy="_sn" placeholder="请输入卡密" />
+          <input type="text" v-model="_sn" placeholder="请输入卡密" />
           <button class="add-sn" @click="addSn">添加卡密</button>
         </div>
       </div>

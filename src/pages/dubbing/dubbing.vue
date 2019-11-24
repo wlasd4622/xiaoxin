@@ -2,17 +2,12 @@
   <div class="container">
     <div class="header">
       <span class="left">输入配音词</span>
-      <span @click="snManage">卡密管理</span>
+      <span @click="snManage" class="sn-manage">卡密管理</span>
     </div>
-    <form action>
-      <div class="input-content pr">
-        <textarea name="text" v-model.lazy="text" cols="30" rows="10"></textarea>
-        <div
-          class="input-numer"
-          :class="text.length>maxChars?'error':''"
-        >{{text.length}}/{{maxChars}}</div>
-      </div>
-    </form>
+    <div class="input-content pr">
+      <textarea ref="text" v-model="text" cols="30" rows="10"></textarea>
+      <div class="input-numer" :class="text.length>maxChars?'error':''">{{text.length}}/{{maxChars}}</div>
+    </div>
     <div class="group">
       <p>选择配音师</p>
       <div @click="settingHandle(0)">
@@ -27,7 +22,7 @@
         <i class="icon iconfont icon-jiantou"></i>
       </div>
     </div>
-    <div class="group">
+    <div class="group" v-if="bmListStatus!==-1">
       <p>选择背景音乐</p>
       <div @click="settingHandle(1)">
         <span v-if="!setting.bg">选择背景音乐</span>
@@ -43,7 +38,7 @@
         v-model.lazy="audioSrc"
       />
       <button
-        @click="downLoadAudio"
+        @click="downFile"
         v-if="taskId&&audioSrc"
         class="icon-btn download audio-exist"
         data-clipboard-target="#audioSrcInput"
@@ -51,7 +46,7 @@
         <i class="icon iconfont icon-xiazai"></i>
         <p>下载</p>
       </button>
-      <button @click="downLoadAudio" v-if="!(taskId&&audioSrc)" class="icon-btn download">
+      <button @click="downFile" v-if="!(taskId&&audioSrc)" class="icon-btn download">
         <i class="icon iconfont icon-xiazai"></i>
         <p>下载</p>
       </button>
@@ -66,14 +61,14 @@
         <div class="c">生成配音</div>
       </button>
     </div>
-    <awesome-picker
+    <!-- <awesome-picker
       v-if="pickerData&&pickerData.length"
       :anchor="pickerAnchor"
       ref="picker"
       :data="pickerData"
       @cancel="handlePickerCancel"
       @confirm="handlePickerConfirm"
-    ></awesome-picker>
+    ></awesome-picker>-->
     <div class="loader-content" v-if="audioStatus">
       <div class="loader">
         <i @click="audioAuspend" class="icon iconfont icon-2guanbi"></i>
@@ -86,6 +81,7 @@
 </template>
 
 <script>
+import { formatTime } from "@/utils/index";
 import api from "@/common/api";
 // http://mint-ui.github.io/docs/#/zh-cn2/checklist
 import axios from "axios";
@@ -94,6 +90,7 @@ export default {
   name: "dubbing",
   data() {
     return {
+      // player: this.$player(),
       sn: "",
       bmList: [],
       bmListStatus: -1,
@@ -107,6 +104,7 @@ export default {
       text: "",
       taskAddObj: {},
       taskId: "",
+      mp4_url: "",
       version: 200,
       loading: false,
       pickerType: 0,
@@ -127,18 +125,26 @@ export default {
       }
     };
   },
-  created() {},
-  mounted() {},
+  mounted() {
+    this.bgMusicList();
+    // this.audioStatus = true;
+    // this.$player.src = `https://file1017.oss-cn-zhangjiakou.aliyuncs.com/tts/20191124/38205561a6d641f896ff57e69e78f8c6.mp3`;
+    // this.$player.play();
+  },
   onShow() {
     this.getSetting();
   },
-
+  onHide() {
+    this.$player.stop();
+  },
+  onUnload() {
+    this.$player.stop();
+  },
   methods: {
     snManage() {
       wx.navigateTo({ url: "../password/main" });
     },
     getSetting() {
-      console.log(666);
       let dubbing = wx.getStorageSync("dubbing") || "";
       let speed = wx.getStorageSync("speed") || "";
       let bg = wx.getStorageSync("bg") || "";
@@ -164,8 +170,8 @@ export default {
       this.voiceIndex = index || 0;
     },
     audioAuspend() {
-      this.audio.pause();
       this.audioStatus = false;
+      this.$player.stop();
     },
     async sleep(ms = 300) {
       return new Promise((resolve, reject) => {
@@ -180,14 +186,24 @@ export default {
       this.bmList = data;
     },
     async getTask(id) {
+      let that = this;
       let audioSrc = "";
+      let mp4Src = "";
       do {
         try {
           let { data } = await api.taskStatus(id);
-          console.log(data);
-          if (data && data.data.status == 0) {
+          if (data && data.download_url) {
             // 配音完成
-            audioSrc = data.data.download_url;
+            audioSrc = data.download_url;
+            mp4Src = data.mp4_url;
+            //缓存
+            let historyList = JSON.parse(
+              wx.getStorageSync("historyList") || "[]"
+            );
+            data.text = that.text;
+            data.createData = formatTime(new Date());
+            historyList.push(data);
+            wx.setStorageSync("historyList", JSON.stringify(historyList));
             break;
           }
           await this.sleep(2000);
@@ -196,64 +212,64 @@ export default {
           break;
         }
       } while (!audioSrc);
-      this.loading = false;
-      this.audioSrc = audioSrc;
-      wx.showModal({
-        title: "配音成功",
-        content: `本次配音消耗：${this.taskAddObj.point},卡密剩余点数：${
-          this.taskAddObj.balance
-        },卡密有效期：${this.taskAddObj.expire}`
-      });
+      try {
+        this.loading = false;
+        wx.hideLoading();
+        this.audioSrc = audioSrc;
+        this.mp4Src = mp4Src;
+        wx.showModal({
+          title: "配音成功",
+          content: `本次配音消耗：${this.taskAddObj.point},卡密剩余点数：${
+            this.taskAddObj.balance
+          },卡密有效期：${this.taskAddObj.expire}`
+        });
+      } catch (err) {
+        console.log(err);
+      }
     },
-    downLoadAudio() {
-      this.Toast("开发中...");
-      return false;
+    downFile() {
       let that = this;
-      if (!that.audioSrc) {
+      if (!that.mp4Src) {
         if (that.taskId) {
-          Toast("配音生成中，请稍后");
+          that.Toast("配音生成中，请稍后");
         } else {
-          Toast("请先生成配音");
+          that.Toast("请先生成配音");
         }
         return false;
       }
+      wx.saveVideoToPhotosAlbum({
+        filePath: that.mp4Src,
+        success(res) {
+          that.Toast("保存成功");
+        },
+        fail(err) {
+          that.Toast(err.errMsg);
+        }
+      });
     },
     audioPlay() {
-      this.Toast("开发中...");
-      return false;
       let that = this;
       if (!that.audioSrc) {
         if (that.taskId) {
-          Toast("配音生成中，请稍后");
+          this.Toast("配音生成中，请稍后");
         } else {
-          Toast("请先生成配音");
+          this.Toast("请生成配音");
         }
         return false;
       }
       that.audioStatus = true;
-      that.audio.src = this.audioSrc;
-      let playPromise;
-      playPromise = that.audio.play();
-      if (playPromise) {
-        let second = that.audio.duration;
-        playPromise
-          .then(() => {
-            // 音频加载成功
-            // 音频的播放需要耗时
-            that.tiemr = setInterval(() => {
-              second--;
-              if (second <= 0) {
-                that.audio.pause();
-                that.audioStatus = false;
-                clearInterval(that.tiemr);
-              }
-            }, 1000);
-          })
-          .catch(e => {
-            // 音频加载失败
-            console.error(e);
-          });
-      }
+      this.$player.src = this.audioSrc;
+      this.$player.onEnded(res => {
+        console.log(`onEnded`);
+        // 监听背景音频自然播放结束事件
+        that.audioStatus = false;
+      });
+      this.$player.onStop(res => {
+        console.log(`onStop`);
+        // 监听背景音频自然播放结束事件
+        that.audioStatus = false;
+      });
+      this.$player.play();
     },
     Toast(msg) {
       wx.showToast({
@@ -270,11 +286,13 @@ export default {
       }
       let sn = wx.getStorageSync("sn");
       this.sn = sn;
+      // TODO
+      // this.text = "66666666";
       if (!this.text) {
         this.Toast("请输入配音内容");
         return false;
       } else if (!this.sn) {
-        this.Toast("请输入卡号");
+        this.Toast("请设置卡号");
         return false;
       }
       wx.showModal({
@@ -291,15 +309,20 @@ export default {
             that.taskId = "";
             that.audioSrc = "";
             that.taskAddObj = {};
+            let params = {
+              version: that.version,
+              sn: that.sn,
+              voice: that.setting.dubbing.no,
+              speech_rate: that.setting.speed.value,
+              text: that.text
+            };
+
+            if (that.bmListStatus !== -1 && that.setting.bg.no) {
+              params.bg_music_no = that.setting.bg.no;
+            }
+
             api
-              .taskAdd({
-                version: that.version,
-                sn: that.sn,
-                voice: that.setting.dubbing.no,
-                speech_rate: that.setting.speed.value,
-                text: that.text,
-                bg_music_no: that.setting.bg.no
-              })
+              .taskAdd(params)
               .then(res => {
                 if (res.status === 0) {
                   let taskId = res.data.task_id;
@@ -688,5 +711,8 @@ button:after {
   top: -37px;
   right: -30px;
   font-size: 23px;
+}
+.sn-manage {
+  color: #0000cc;
 }
 </style>

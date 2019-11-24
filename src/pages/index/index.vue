@@ -1,10 +1,6 @@
 <template>
   <div class="container">
     <div>
-      <p>{{aa}}</p>
-      <p>
-        <input type="text" @input="fff" v-model.lazy="aa" placeholder="ddd" />
-      </p>
       <p>
         <i class="icon iconfont icon-luyin"></i>
       </p>
@@ -23,7 +19,6 @@ import api from "@/common/api";
 export default {
   data() {
     return {
-      aa: "",
       motto: "Hello miniprograme",
       userInfo: {
         nickName: "mpvue",
@@ -34,9 +29,6 @@ export default {
 
   components: {
     card
-  },
-  fff(e){
-    console.log(e);
   },
   methods: {
     fff(e){

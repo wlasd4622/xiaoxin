@@ -1,23 +1,37 @@
 <template>
   <div class="container">
     <div class="header">
-      <div><i class="icon iconfont icon-luyin"></i></div>
+      <div>
+        <i class="icon iconfont icon-luyin"></i>
+      </div>
     </div>
     <div class="menu-list">
       <div class="item item0" @click="to('password')">
-        <div class="d1"><i class="icon iconfont icon-qiamizhifu"></i></div>
+        <div class="d1">
+          <i class="icon iconfont icon-qiamizhifu"></i>
+        </div>
         <div class="d2">卡密管理</div>
-        <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
+        <div class="d3">
+          <i class="icon iconfont icon-jiantou"></i>
+        </div>
       </div>
       <div class="item item1" @click="to()">
-        <div class="d1"><i class="icon iconfont icon-shiyongbangzhu"></i></div>
+        <div class="d1">
+          <i class="icon iconfont icon-shiyongbangzhu"></i>
+        </div>
         <div class="d2">使用帮助</div>
-        <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
+        <div class="d3">
+          <i class="icon iconfont icon-jiantou"></i>
+        </div>
       </div>
-      <div class="item item2" @click="to()">
-        <div class="d1"><i class="icon iconfont icon-lianxikefu"></i></div>
+      <div class="item item2" @click="to('customer')">
+        <div class="d1">
+          <i class="icon iconfont icon-lianxikefu"></i>
+        </div>
         <div class="d2">联系客服</div>
-        <div class="d3"><i class="icon iconfont icon-jiantou"></i></div>
+        <div class="d3">
+          <i class="icon iconfont icon-jiantou"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -26,7 +40,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      wechart: "gougouccnu"
+    };
   },
 
   created() {},
@@ -43,7 +59,33 @@ export default {
         this.Toast("开发中");
         return false;
       }
-      wx.navigateTo({ url: `../${name}/main` });
+      if (name === "customer") {
+        this.customer();
+      } else {
+        wx.navigateTo({ url: `../${name}/main` });
+      }
+    },
+    Toast(msg) {
+      wx.showToast({
+        title: msg,
+        icon: "none",
+        duration: 2000
+      });
+    },
+    customer() {
+      let that = this;
+      wx.setClipboardData({
+        data: this.wechart,
+        success(res) {
+          wx.showModal({
+            title: "提示",
+            content: `开发者微信号${that.wechart}已复制，可以去微信中搜索添加`
+          });
+        },
+        fail(err) {
+          that.Toast(err.errMsg);
+        }
+      });
     }
   }
 };

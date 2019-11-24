@@ -15,7 +15,7 @@
     <div class="content">
       <div v-if="tabIndex===0 && pysList.length" class="tab1">
         <div class="item" v-for="(item,index) in pysList" :key="item">
-          <div class="left">
+          <div class="left" @click="play(item)">
             <div class>
               <div class="row row1">
                 <div>{{item.name}}</div>
@@ -41,37 +41,10 @@
           </div>
         </div>
       </div>
-      <div v-if="tabIndex===0 && pysList.length" class="tab1">
-        <div class="item" v-for="(item,index) in pysList" :key="item">
-          <div class="left">
-            <div class>
-              <div class="row row1">
-                <div>{{item.name}}</div>
-                <div class="star-warp">
-                  <i
-                    class="iconfont icon-star bright"
-                    v-for="(sitem,sIndex) in item.level"
-                    :key="sIndex"
-                  ></i>
-                  <i
-                    class="iconfont icon-star dark"
-                    v-for="(sitem,sIndex) in 5-item.level"
-                    :key="sIndex"
-                  ></i>
-                </div>
-              </div>
-              <div class="use">{{useCount[index]}}人使用</div>
-            </div>
-          </div>
-          <div class="right" @click="selectedDubbing(index)">
-            <i v-if="item.selected" class="iconfont icon-radio2"></i>
-            <i v-else class="iconfont icon-radio1"></i>
-          </div>
-        </div>
-      </div>
+      
       <div v-if="tabIndex===1 && bmList.length" class="tab2">
         <div class="item" v-for="(item,index) in bmList" :key="index">
-          <div class="left">{{item.name}}</div>
+          <div class="left" @click="play(item)">{{item.name}}</div>
           <div class="right" @click="selectedBg(index)">
             <i v-if="item.selected" class="iconfont icon-radio2"></i>
             <i v-else class="iconfont icon-radio1"></i>
@@ -190,19 +163,48 @@ export default {
         8796,
         2134
       ],
-      bmList: [] // 背景音
+      bmList: [], // 背景音
+      audioStatus: false
     };
   },
 
   async created() {},
   async mounted() {
+    let that = this;
     await this.peiYinShiList();
     await this.bgMusicList();
+    this.$player.onEnded(res => {
+      console.log(`onEnded`);
+      // 监听背景音频自然播放结束事件
+      that.audioStatus = false;
+    });
+    this.$player.onStop(res => {
+      console.log(`onStop`);
+      // 监听背景音频自然播放结束事件
+      that.audioStatus = false;
+    });
   },
   onLoad(options) {
-    this.tabIndex = parseInt(options.index||0);
+    this.tabIndex = parseInt(options.index || 0);
+    // TODO
+    // this.tabIndex = 1;
+  },
+  onHide() {
+    this.$player.stop();
+  },
+  onUnload() {
+    this.$player.stop();
   },
   methods: {
+    play(obj) {
+      let that = this;
+      this.$player.stop();
+      console.log(JSON.stringify(obj));
+      this.$player.src = obj.mp3;
+      this.$player.title = obj.name;
+      this.$player.play();
+      that.audioStatus = true;
+    },
     activeTab(index = 0) {
       this.tabIndex = index;
     },
@@ -340,6 +342,31 @@ export default {
           }
         }
       }
+    }
+    .right {
+      text-align: center;
+      width: 60px;
+      position: relative;
+      right: -20px;
+      .icon-radio2 {
+        color: #3cb204;
+        font-size: 22px;
+      }
+      .icon-radio1 {
+        color: #4b4f57;
+      }
+    }
+  }
+}
+.tab2 {
+  .item {
+    display: flex;
+    line-height: 60px;
+    height: 60px;
+    margin: 0 20px;
+    border-bottom: 1px solid #f5f5f5;
+    .left {
+      flex: 1;
     }
     .right {
       text-align: center;

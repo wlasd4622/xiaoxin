@@ -1,28 +1,35 @@
 <template>
   <div class="list">
-    <div :class="['item','status-'+(item.status?'1':'0')]" @click="play(index)" v-for="(item,index) in historyList" :key="item">
-      <div class="s1">{{index+1}}</div>
-      <div class="s2">
-        <i v-if="!item.status" class="iconfont icon icon-bofang"></i>
-        <i v-else class="iconfont icon icon-zanting"></i>
-      </div>
-      <div class="s3">
-        <span class="animate">{{item.title}}</span>
-
-      </div>
-
-      <div class="s4">
-        <div v-if="!item.status" >{{item.duration}}</div>
-        <div v-else class=" music">
-          <span class='line line1'></span>
-          <span class='line line2'></span>
-          <span class='line line3'></span>
-          <span class='line line4'></span>
-          <span class='line line5'></span>
+    <template>
+      <div
+        :class="['item','status-'+(item.status?'1':'0')]"
+        @click="play(index)"
+        v-for="(item,index) in historyList"
+        :key="item"
+      >
+        <div class="s1">{{index+1}}</div>
+        <div class="s2">
+          <i v-if="!item.status" class="iconfont icon icon-bofang"></i>
+          <i v-else class="iconfont icon icon-zanting"></i>
         </div>
+        <div class="s3">
+          <span class="animate">{{item.text}}</span>
+        </div>
+
+        <div class="s4">
+          <div v-if="!item.status">{{item.duration}}</div>
+          <div v-else class="music">
+            <span class="line line1"></span>
+            <span class="line line2"></span>
+            <span class="line line3"></span>
+            <span class="line line4"></span>
+            <span class="line line5"></span>
+          </div>
+        </div>
+        <!-- <span class="s5">{{item.createData}}</span> -->
       </div>
-      <!-- <span class="s5">{{item.createData}}</span> -->
-    </div>
+    </template>
+    <div class="text-center" v-if="historyList&&historyList.length===0">暂未记录</div>
   </div>
 </template>
 
@@ -34,173 +41,32 @@ export default {
 
   data() {
     return {
-      historyList: [
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title:
-            "大幅度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电度水电费 v, ,sdf噶电饭锅",
-          src: "",
-          duration: "20:00",
-          createData: "2019-11-11 11:11",
-          status: ""
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        },
-        {
-          title: "大幅度水电费噶电饭锅",
-          src: "",
-          duration: "20:00",
-          status: "",
-          createData: "2019-11-11 11:11"
-        }
-      ]
+      currPlayIndex: -1,
+      historyList: ""
     };
   },
-
-  created() {},
+  onShow() {
+    let historyList = JSON.parse(wx.getStorageSync("historyList") || "[]");
+    historyList.map(item => (item.status = false));
+    this.historyList = historyList;
+  },
+  onHide() {
+    this.$player.stop();
+  },
+  onUnload() {
+    this.$player.stop();
+  },
+  mounted() {
+    let that = this;
+    this.$player.onEnded(res => {
+      that.historyList[that.currPlayIndex].status = false;
+      console.log(`onEnded`);
+    });
+    this.$player.onStop(res => {
+      that.historyList[that.currPlayIndex].status = false;
+      console.log(`onStop`);
+    });
+  },
   methods: {
     play(index) {
       let historyList = this.historyList;
@@ -212,6 +78,17 @@ export default {
         }
       }
       this.$set(this, historyList);
+      let audioSrc = historyList[index].download_url;
+      // play
+      this.$player.src = audioSrc;
+      this.$player.title = "AI";
+      if (this.currPlayIndex != index) {
+        this.$player.play();
+      } else {
+        this.$player.stop();
+      }
+
+      this.currPlayIndex = index;
     }
   }
 };
@@ -446,6 +323,9 @@ export default {
   100% {
     height: 28px;
   }
+}
+.text-center {
+  text-align: center;
 }
 </style>
 

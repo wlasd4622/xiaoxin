@@ -9,6 +9,10 @@
     "pages/setting/main",
     "pages/audition/main"
   ],
+  "requiredBackgroundModes": [
+    "audio",
+    "location"
+  ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
@@ -20,22 +24,26 @@
     "backgroundColor": "#fafafa",
     "selectedColor": "#3cb204",
     "borderStyle": "white",
-    "list": [{
-      "text": "配音",
-      "pagePath": "pages/index/main",
-      "iconPath": "static/tabs/t1.png",
-      "selectedIconPath": "static/tabs/t1-active.png"
-    }, {
-      "text": "试听",
-      "pagePath": "pages/audition/main",
-      "iconPath": "static/tabs/t2.png",
-      "selectedIconPath": "static/tabs/t2-active.png"
-    }, {
-      "text": "我的",
-      "pagePath": "pages/my/main",
-      "iconPath": "static/tabs/t3.png",
-      "selectedIconPath": "static/tabs/t3-active.png"
-    }],
+    "list": [
+      {
+        "text": "配音",
+        "pagePath": "pages/index/main",
+        "iconPath": "static/tabs/t1.png",
+        "selectedIconPath": "static/tabs/t1-active.png"
+      },
+      {
+        "text": "试听",
+        "pagePath": "pages/audition/main",
+        "iconPath": "static/tabs/t2.png",
+        "selectedIconPath": "static/tabs/t2-active.png"
+      },
+      {
+        "text": "我的",
+        "pagePath": "pages/my/main",
+        "iconPath": "static/tabs/t3.png",
+        "selectedIconPath": "static/tabs/t3-active.png"
+      }
+    ],
     "position": "bottom"
   }
 }
