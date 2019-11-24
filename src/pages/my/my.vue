@@ -132,6 +132,7 @@ export default {
       text-align: center;
       width: 30px;
       margin-right: 5px;
+      
       ._i{
         color: #555;
       }
@@ -139,11 +140,13 @@ export default {
     .d2 {
       flex: 1;
       font-size: 16px;
+      color: #333;
     }
     .d3 {
       text-align: right;
       width: 20px;
       ._i {
+        color: gray;
         font-size: 14px;
       }
     }
