@@ -35,8 +35,8 @@
 import { formatTime } from "@/utils/index";
 
 export default {
+  onShareAppMessage() {},
   components: {},
-
   data() {
     return {
       currPlayIndex: -1,

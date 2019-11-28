@@ -29,6 +29,7 @@
 <script>
 import api from "@/common/api";
 export default {
+  onShareAppMessage() {},
   data() {
     return {
       sn: "",

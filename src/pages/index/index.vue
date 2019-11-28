@@ -13,73 +13,16 @@
 </template>
 
 <script>
-import card from "@/components/card";
-import api from "@/common/api";
 export default {
+  onShareAppMessage() {},
   data() {
-    return {
-      motto: "Hello miniprograme",
-      userInfo: {
-        nickName: "mpvue",
-        avatarUrl: "" //"http://mpvue.com/assets/logo.png"
-      }
-    };
-  },
-
-  components: {
-    card
+    return {};
   },
   methods: {
     toDubbingPage() {
       wx.navigateTo({ url: "../dubbing/main" });
-    },
-    submitHandle(e) {
-      console.log(e);
-    },
-    bindViewTap() {
-      const url = "../logs/main";
-      if (mpvuePlatform === "wx") {
-        mpvue.switchTab({ url });
-      } else {
-        mpvue.navigateTo({ url });
-      }
-    },
-    clickHandle(ev) {
-      console.log("clickHandle:", ev);
-      // throw {message: 'custom test'}
     }
-  },
-  mounted() {
-    // let app = getApp()
-    // let {data} = await api.peiYinShiList()
-    // console.log(data);
-    // https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html
-    // wx.login({
-    //   success(res){
-    //     console.log(res);
-    //   }
-    // })
-    // wx.getSetting({
-    //   success(res) {
-    //     if (!res.authSetting["scope.userInfo"]) {
-    //       wx.authorize({
-    //         scope: "scope.userInfo",
-    //         success(res) {
-    //           // 用户已经同意小程序使用录音功能，后续调用 wx.startRecord 接口不会弹窗询问
-    //           console.log(res);
-    //         }
-    //       });
-    //     }
-    //   }
-    // });
-    // wx.getUserInfo({
-    //   withCredentials: true,
-    //   success(res) {
-    //     console.log(res);
-    //   }
-    // });
-  },
-  async created() {}
+  }
 };
 </script>
 

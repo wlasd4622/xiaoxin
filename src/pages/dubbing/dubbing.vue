@@ -11,7 +11,7 @@
     <div class="group">
       <p>选择配音师</p>
       <div @click="settingHandle(0)">
-        <span class="_picker" v-if="setting.dubbing">{{setting.dubbing.name}}</span>
+        <span class="_picker" v-if="setting.dubbing">{{setting.dubbing.name}} - {{setting.dubbing.level}}星配音师</span>
         <i class="icon iconfont icon-jiantou"></i>
       </div>
     </div>
@@ -83,6 +83,7 @@ import api from "@/common/api";
 import axios from "axios";
 import qs from "qs";
 export default {
+  onShareAppMessage() {},
   name: "dubbing",
   data() {
     return {
@@ -242,7 +243,7 @@ export default {
             filePath: res.tempFilePath,
             success(res) {
               wx.hideLoading();
-              that.Toast("保存成功");
+              that.Toast("配音视频已保存到相册");
             },
             fail(err) {
               // that.Toast(err.errMsg);

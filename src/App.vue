@@ -9,23 +9,27 @@ export default {
      * 百度：mpvue === swan, mpvuePlatform === 'swan'
      * 支付宝(蚂蚁)：mpvue === my, mpvuePlatform === 'my'
      */
-
-    let logs;
-    if (mpvuePlatform === "my") {
-      logs = mpvue.getStorageSync({ key: "logs" }).data || [];
-      logs.unshift(Date.now());
-      mpvue.setStorageSync({
-        key: "logs",
-        data: logs
-      });
-    } else {
-      logs = mpvue.getStorageSync("logs") || [];
-      logs.unshift(Date.now());
-      mpvue.setStorageSync("logs", logs);
-    }
-  },
-  log() {
-    console.log(`log at:${Date.now()}`);
+    wx.onAppRoute(data => {
+      // 当前页面
+      let view = getCurrentPages()[getCurrentPages().length - 1];
+      let _data = null;
+      if (view) {
+        _data = view.data;
+        if (data.qcappnoshare) {
+          return;
+        } else {
+          view.onShareAppMessage = function() {
+            return {
+              title: "真人发声、AI合成、文字转语音，接近真人配音效果",
+              imageUrl: "../../static/images/share.png",
+              path: view.route.includes("peiyin")
+                ? `/${view.route}`
+                : "/pages/index/main"
+            };
+          };
+        }
+      }
+    });
   }
 };
 </script>

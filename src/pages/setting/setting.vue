@@ -63,7 +63,11 @@
       </div>
       <div v-if="tabIndex===2" class="tab3">
         <div class="warp">
-          <div v-for="(item,index) in speedList" @click="selectedSpeed(index);vibrateShort()" :key="item">
+          <div
+            v-for="(item,index) in speedList"
+            @click="selectedSpeed(index);vibrateShort()"
+            :key="item"
+          >
             <div v-if="item.selected" class="circular active" :class="item.selected?'active':''"></div>
             <div v-else class="circular" :class="item.selected?'active':''"></div>
             <div>{{item.value}}</div>
@@ -77,6 +81,7 @@
 <script>
 import api from "@/common/api";
 export default {
+  onShareAppMessage() {},
   data() {
     return {
       bmListStatus: -1,
