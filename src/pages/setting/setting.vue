@@ -14,8 +14,13 @@
     </div>
     <div class="content">
       <div v-if="tabIndex===0 && pysList.length" class="tab1">
-        <div class="item" v-for="(item,index) in pysList" :key="item">
-          <div class="left" @click="play(item)">
+        <div
+          class="item"
+          v-for="(item,index) in pysList"
+          :key="item"
+          @click="play(item);selectedDubbing(index)"
+        >
+          <div class="left">
             <div class>
               <div class="row row1">
                 <div>{{item.name}}</div>
@@ -32,10 +37,10 @@
                   ></i>
                 </div>
               </div>
-              <div class="use">{{useCount[index]}}人使用</div>
+              <div class="use" v-if="item.use">{{item.use||0}}人使用</div>
             </div>
           </div>
-          <div class="right" @click="selectedDubbing(index)">
+          <div class="right">
             <i v-if="item.selected" class="iconfont icon-radio2"></i>
             <i v-else class="iconfont icon-radio1"></i>
           </div>
@@ -43,9 +48,14 @@
       </div>
 
       <div v-if="tabIndex===1 && bmList.length" class="tab2">
-        <div class="item" v-for="(item,index) in bmList" :key="index">
-          <div class="left" @click="play(item)">{{item.name}}</div>
-          <div class="right" @click="selectedBg(index)">
+        <div
+          class="item"
+          v-for="(item,index) in bmList"
+          :key="index"
+          @click="play(item);selectedBg(index);"
+        >
+          <div class="left">{{item.name}}</div>
+          <div class="right">
             <i v-if="item.selected" class="iconfont icon-radio2"></i>
             <i v-else class="iconfont icon-radio1"></i>
           </div>
@@ -53,7 +63,7 @@
       </div>
       <div v-if="tabIndex===2" class="tab3">
         <div class="warp">
-          <div v-for="(item,index) in speedList" @click="selectedSpeed(index)" :key="item">
+          <div v-for="(item,index) in speedList" @click="selectedSpeed(index);vibrateShort()" :key="item">
             <div v-if="item.selected" class="circular active" :class="item.selected?'active':''"></div>
             <div v-else class="circular" :class="item.selected?'active':''"></div>
             <div>{{item.value}}</div>
@@ -192,7 +202,7 @@ export default {
     this.tabIndex = parseInt(options.index || 0);
     this.dubbingNo = options.dubbingNo || 0;
     this.speedValue = options.speedValue || 0;
-    this.bgNo = options.bgNo;
+    this.bgNo = options.bgNo || 0;
     // 初始化默认值
     let speedList = this.speedList;
     speedList = speedList.map(item => {
@@ -211,14 +221,19 @@ export default {
     this.$player.stop();
   },
   methods: {
+    // 手机震动
+    vibrateShort() {
+      wx.vibrateShort({});
+    },
     play(obj) {
       let that = this;
       this.$player.stop();
-      console.log(JSON.stringify(obj));
-      this.$player.src = obj.mp3;
-      this.$player.title = obj.name;
-      this.$player.play();
-      that.audioStatus = true;
+      if (obj.mp3) {
+        this.$player.src = obj.mp3;
+        this.$player.title = obj.name;
+        this.$player.play();
+        that.audioStatus = true;
+      }
     },
     activeTab(index = 0) {
       this.tabIndex = index;
@@ -260,7 +275,7 @@ export default {
       let pysList = [];
       data.map(item => {
         let level = "";
-        let { no, name, mp3 } = item;
+        let { no, name, mp3, use } = item;
         let [_level, _name] = name.split("：");
         level = parseInt(_level);
         name = _name.trim();
@@ -269,6 +284,7 @@ export default {
           selected = true;
         }
         pysList.push({
+          use,
           level,
           no,
           name,
@@ -280,6 +296,10 @@ export default {
     },
     async bgMusicList() {
       let { data, status } = await api.listBgMusic();
+      data.unshift({
+        no: 0,
+        name: "无"
+      });
       let list = data.map(item => {
         item.selected = false;
         if (item.no == this.bgNo) {
@@ -287,7 +307,7 @@ export default {
         }
         return item;
       });
-      this.bmList = data;
+      this.bmList = list;
       this.bmListStatus = status;
     }
   }

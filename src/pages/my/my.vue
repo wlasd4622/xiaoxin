@@ -42,6 +42,7 @@ import api from "@/common/api";
 export default {
   data() {
     return {
+      customerInfo:'',
       wechart: "",
       kefuStatus: -1
     };
@@ -55,6 +56,7 @@ export default {
       let { data, status } = await api.getKeFu(sn);
       this.kefuStatus = status;
       if (this.kefuStatus === 0) {
+        this.customerInfo=data;
         this.wechart = data.split("：").pop();
       }
     },
@@ -91,7 +93,7 @@ export default {
           wx.showModal({
             title: "提示",
             showCancel: false,
-            content: `开发者微信号${that.wechart}已复制，可以去微信中搜索添加`
+            content: that.customerInfo
           });
         },
         fail(err) {

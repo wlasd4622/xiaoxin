@@ -1,35 +1,28 @@
 <template>
   <div class="container">
-    <template v-if="!sn">
-      <div class="group group1">
-        <div class="input">
-          <input type="text" v-model="_sn" placeholder="请输入卡密" />
-          <button class="add-sn" @click="addSn">添加卡密</button>
-        </div>
+    <div class="row">
+      <label for>卡密</label>
+      <div class="right">
+        <input type="text" v-model="sn" placeholder="请输入卡密" />
       </div>
-    </template>
-    <template v-else>
-      <div class="card">
-        <div class="wrap">
-          <div>
-            <span>卡密：</span>
-            <span>{{sn}}</span>
-          </div>
-          <div>
-            <span>剩余点数：</span>
-            <span>{{data.balance}}</span>
-          </div>
-          <!-- <div>
-            <span>使用次数：</span>
-            <span>99</span>
-          </div>-->
-          <div>
-            <span>到期时间：</span>
-            <span>{{data.expire}}</span>
-          </div>
-        </div>
+    </div>
+    <div class="row" v-if="data.type">
+      <label for>类型</label>
+      <div class="right">{{data.type}}</div>
+    </div>
+    <div class="row" v-if="data.balance&&data.type!='次卡'&&data.type!='月卡'&&data.type!='年卡'">
+      <label for>剩余点数</label>
+      <div class="right">{{data.balance}}</div>
+    </div>
+    <div class="row" v-if="data.expire">
+      <label for>到期时间</label>
+      <div class="right">
+        <span>{{data.expire}}</span>
       </div>
-    </template>
+    </div>
+    <div class="btns">
+      <button @click="addSn">验证</button>
+    </div>
   </div>
 </template>
 
@@ -39,7 +32,6 @@ export default {
   data() {
     return {
       sn: "",
-      _sn: "",
       data: {}
     };
   },
@@ -63,16 +55,15 @@ export default {
     },
     async addSn() {
       console.log(`>>>addSn`);
-      if (!this._sn) {
+      if (!this.sn) {
         this.Toast("请填写卡密");
         return false;
       }
-      let { data, status, message } = await api.getSnInfo(this._sn);
+      let { data, status, message } = await api.getSnInfo(this.sn);
       if (status === 0) {
-        this.Toast("添加成功");
-        wx.setStorageSync("sn", this._sn);
-        this.sn = this._sn;
-        this.data=data;
+        this.Toast("验证成功");
+        wx.setStorageSync("sn", this.sn);
+        this.data = data;
       } else {
         this.Toast(message);
       }
@@ -81,55 +72,38 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.group,
-.group1 {
-  margin-top: 10%;
-  input {
-    height: 40px;
-    display: block;
-    width: 90%;
-    margin: auto;
-    box-sizing: border-box;
-    padding: 0 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-  }
+.container {
+  padding-top: 20px;
 }
-.add-sn {
-  background: #3cb204;
-  width: 90%;
-  color: #fff;
-  font-size: 36rpx;
-  margin: auto;
-  height: 92rpx;
-  line-height: 92rpx;
-  margin-top: 60rpx;
-}
-.card {
-  background: rgba(0, 0, 0, 0.4);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.row {
+  line-height: 40px;
+  height: 40px;
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  .wrap {
-    background: #fff;
-    padding: 10px;
-    border-radius: 20px;
-    min-width: 80%;
-    & > div {
-      line-height: 50px;
-      font-size: 16px;
-      display: flex;
-      & > span:first-child {
-        width: 90px;
-        color: gray;
-      }
+  padding: 0 20px;
+  font-size: 16px;
+  label {
+    width: 80px;
+    color: #333;
+  }
+  .right {
+    flex: 1;
+    input {
+      margin-top: 5px;
+      padding: 0 10px;
+      border-radius: 3px;
+      height: 30px;
+      border: 1px solid #e0e0e0;
     }
   }
+}
+button {
+  background: #3cb204;
+  width: 340px;
+  color: #fff;
+  font-size: 18px;
+  margin: auto;
+  height: 46px;
+  line-height: 46px;
+  margin-top: 30px;
 }
 </style>

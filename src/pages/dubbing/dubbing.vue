@@ -25,7 +25,7 @@
     <div class="group" v-if="bmListStatus!==-1">
       <p>选择背景音乐</p>
       <div @click="settingHandle(1)">
-        <span v-if="!setting.bg">选择背景音乐</span>
+        <span v-if="!setting.bg || (setting&&setting.bg&&setting.bg.no==0)">选择背景音乐</span>
         <span v-else class="_picker">{{setting.bg.name}}</span>
         <i class="icon iconfont icon-jiantou"></i>
       </div>
@@ -50,8 +50,12 @@
         <i class="icon iconfont icon-xiazai"></i>
         <p>下载</p>
       </button>
-      <button @click="audioPlay" class="audition icon-btn">
-        <i class="icon iconfont icon-shiting"></i>
+      <button
+        @click="audioPlay"
+        :class="['audition' ,'icon-btn',audioStatus?'audition_status1':'audition_status0']"
+      >
+        <i v-if="!audioStatus" class="icon iconfont icon-shiting"></i>
+        <i v-else class="icon iconfont icon-zanting-copy"></i>
         <p>试听</p>
       </button>
       <button class="created" @click="submit" :disabled="!!loading" :class="loading?'loading':''">
@@ -61,14 +65,14 @@
         <div class="c">生成配音</div>
       </button>
     </div>
-    <div class="loader-content" v-if="audioStatus">
+    <!-- <div class="loader-content" @click="audioAuspend" v-if="audioStatus">
       <div class="loader">
-        <i @click="audioAuspend" class="icon iconfont icon-2guanbi"></i>
+        <i class="icon iconfont icon-2guanbi"></i>
         <span class="sound"></span>
         <span class="sound"></span>
         <span class="sound"></span>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -93,7 +97,7 @@ export default {
       taskAddObj: {},
       taskId: "",
       mp4_url: "",
-      version: 200,
+      version: 300,
       loading: false,
       setting: {
         dubbing: {
@@ -104,7 +108,8 @@ export default {
             "http://files101.oss-cn-beijing.aliyuncs.com/peiyin_demo/py01_bg.mp3",
           selected: true
         },
-        speed: { index: 5, value: "0", selected: true }
+        speed: { index: 5, value: "0", selected: true },
+        bg: { no: 0 }
       }
     };
   },
@@ -223,7 +228,7 @@ export default {
         if (that.taskId) {
           that.Toast("配音生成中，请稍后");
         } else {
-          that.Toast("请先生成配音");
+          that.Toast("请生成配音");
         }
         return false;
       }
@@ -261,19 +266,25 @@ export default {
         }
         return false;
       }
-      that.audioStatus = true;
-      this.$player.src = this.audioSrc;
-      this.$player.onEnded(res => {
-        console.log(`onEnded`);
-        // 监听背景音频自然播放结束事件
-        that.audioStatus = false;
-      });
-      this.$player.onStop(res => {
-        console.log(`onStop`);
-        // 监听背景音频自然播放结束事件
-        that.audioStatus = false;
-      });
-      this.$player.play();
+      if (!that.audioStatus) {
+        // 播放
+        that.audioStatus = true;
+        this.$player.src = this.audioSrc;
+        this.$player.onEnded(res => {
+          console.log(`onEnded`);
+          // 监听背景音频自然播放结束事件
+          that.audioStatus = false;
+        });
+        this.$player.onStop(res => {
+          console.log(`onStop`);
+          // 监听背景音频自然播放结束事件
+          that.audioStatus = false;
+        });
+        this.$player.play();
+      } else {
+        // 暂停
+        this.audioAuspend();
+      }
     },
     Toast(msg) {
       wx.showToast({
@@ -502,6 +513,12 @@ button:after {
       color: #aaa;
       height: 100%;
       font-size: 13px;
+      &.audition_status1 {
+        ._i {
+          color: #333;
+          font-size: 16px;
+        }
+      }
     }
     .icon-btn {
       line-height: 24px;

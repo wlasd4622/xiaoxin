@@ -4,10 +4,9 @@
       <p>
         <i class="icon iconfont icon-luyin"></i>
       </p>
-      <p class="title">配音神器</p>
-      <p>人工智能黑科技</p>
-      <p>一键文字转语音</p>
-      <p>急速生成广告，促销等配音</p>
+      <p class="title">AI智能配音</p>
+      <p>真人发声 · AI合成 · 文字转语音</p>
+      <p>带有情感和语调 · 接近真人配音效果</p>
       <button @click="toDubbingPage">开始制作配音</button>
     </div>
   </div>
