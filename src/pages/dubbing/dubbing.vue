@@ -5,7 +5,7 @@
       <span @click="snManage" class="sn-manage">卡密管理</span>
     </div>
     <div class="input-content pr">
-      <textarea ref="text" v-model="text" cols="30" rows="10"></textarea>
+      <textarea ref="text" v-model="text" cols="30" rows="10" maxlength="-1"></textarea>
       <div class="input-numer" :class="text.length>maxChars?'error':''">{{text.length}}/{{maxChars}}</div>
     </div>
     <div class="group">
@@ -305,6 +305,9 @@ export default {
       // this.text = "66666666";
       if (!this.text) {
         this.Toast("请输入配音内容");
+        return false;
+      } else if (this.text.length > 300) {
+        this.Toast("配音内容超出限制");
         return false;
       } else if (!this.sn) {
         // this.Toast("请设置卡号");
